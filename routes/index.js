@@ -70,6 +70,35 @@ router.post("/search-journey", async (req, res) => {
   }
 });
 
+router.get("/add-trip/:tripId", async (req, res) => {
+  let trip = await JourneyModel.findById(req.params.tripId); 
+
+  if(req.session.basket == undefined) {
+    req.session.basket = [];
+    req.session.basket.push(trip);
+  } else {
+    req.session.basket.push(trip);
+  }
+  console.log(req.session.basket);
+  res.redirect("/basket"); 
+});
+
+router.get("/basket", (req, res) => {
+  if(req.session.basket !== undefined) {
+    let totalPrice = 0; 
+    for(let trip of req.session.basket) {
+      totalPrice += trip.price
+    }
+    res.render("basket", { trips: req.session.basket, totalPrice });
+  } else {
+    res.redirect("/home");
+  }
+});
+
+router.get("/confirm-basket", (req, res) => {
+  res.redirect("/basket");
+});
+
 router.get("/MyLastTrips", async function (req, res) {
   
   if (req.session.userId == null) {
@@ -80,7 +109,6 @@ router.get("/MyLastTrips", async function (req, res) {
     res.render("home");
   }
 });
-
 
 router.get("/notfound", (req, res) => {
   res.render("notfound");

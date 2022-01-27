@@ -1,0 +1,53 @@
+<%- include("partials/header") %> 
+
+    <div class="row d-flex justify-content-center">
+      <div class="col-8">
+        <h2 class="text-white text-start mt-5 mb-3">My tickets:</h2>
+      </div>
+    </div>  
+    <div class="row d-flex justify-content-center">
+      <div class="col-8">
+
+        <table class="table table-borderless bg-white">
+          <thead>
+            <tr class="table-row">
+              <th scope="col">N°</th>
+              <th scope="col">Journey</th>
+              <th scope="col">Date</th>
+              <th scope="col">Departure Time</th>
+              <th scope="col">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% trips.forEach((trip, index) => { %>              
+              <tr class="table-row">
+                <th scope="row"><%= index + 1 %></th>
+                <td><%= trip.departure %>/<%= trip.arrival %></td>
+                <td><%= formatDate(trip.date) %></td>
+                <td><%= trip.departureTime %></td>
+                <td><%= trip.price %></td>
+              </tr>
+            <% }); %>
+
+            <tr class="table-danger">
+              <th scope="row">Total</th>
+              <td></td>
+              <td></td>
+              <td></td>
+              <th><%= totalPrice %> €</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row d-flex justify-content-center">
+      <div class="col-8 text-end">
+        <a href="/confirm-basket" class="btn btn-danger">Confrim</a>
+      </div>
+    </div>
+
+
+<%- include("partials/footer") %>       
+    
+

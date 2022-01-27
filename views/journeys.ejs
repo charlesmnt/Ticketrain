@@ -14,7 +14,7 @@
               <small>train departure at <%= journey.departureTime %></small>
               <span class="d-flex align-items-center">
                 <h5 class="journey-price me-2"><%= journey.price %> €</h5>
-                <button class="btn btn-danger">OK</button>
+                <a href="/add-trip/<%= journey._id %>" class="btn btn-danger">OK</a>
               </span>
             </li>
           <% }); %>

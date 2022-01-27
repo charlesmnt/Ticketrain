@@ -19,6 +19,23 @@ app.use(session({
   saveUninitialized: false,
 }));
 
+app.locals.formatDate = function(dateToFormat) {
+  let date = new Date(dateToFormat); 
+  let day = date.getDate();
+  let month = date.getMonth() +1
+  let year = date.getFullYear(); 
+
+  if(day < 10) {
+    day = "0"+day
+  }
+  if(month < 10) {
+    month = "0"+day
+  }
+
+  let result = day + "/" + month + "/" + year
+  return result 
+}
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
