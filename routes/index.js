@@ -50,10 +50,24 @@ router.get("/home", (req, res) => {
   }
 });
 
+router.post("/search-journey", async (req, res) => {
 
-router.post("/search-journey", (req, res) => {
-  console.log(req.body);
-  res.render("journeys"); 
+  if(req.body.date !== "") {
+    let journeys = await JourneyModel.find({ departure: req.body.departure, arrival: req.body.arrival, date: new Date(req.body.date)});
+
+    if(journeys.length === 0) {
+      res.redirect("/notfound"); 
+    }
+    
+    let dateReq = {}
+    let date = new Date(req.body.date); 
+    dateReq.day = date.getDate();
+    dateReq.month = date.getMonth() +1
+    
+    res.render("journeys", { journeys, dateReq }); 
+  } else {
+    res.redirect("/notfound");
+  }
 });
 
 router.get("/MyLastTrips", async function (req, res) {
@@ -65,6 +79,11 @@ router.get("/MyLastTrips", async function (req, res) {
     console.log(MyLastOrder);
     res.render("home");
   }
+});
+
+
+router.get("/notfound", (req, res) => {
+  res.render("notfound");
 });
 
 module.exports = router;
