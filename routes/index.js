@@ -1,5 +1,5 @@
 var express = require('express');
-const UserModer = require("../models/users"); 
+const UserModel = require("../models/users"); 
 const OrderModel = require("../models/orders"); 
 const JourneyModel = require("../models/journeys");
 var router = express.Router();
@@ -10,15 +10,36 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-<<<<<<< HEAD
 router.post('/sign-in', async function(req, res, next) {
+    var user = await UserModel.findOne({email : req.body.email , password : req.body.password})
+    console.log(user);
+    if (user != null) {
+      res.redirect('/home');
+    } else {
+      res.redirect('/');
+    }
+  });
 
+  router.post('/sign-up', async function(req, res, next) {
+    
+    var alreadyExist = await UserModel.findOne({email : req.body.email});
 
-  res.render('index', { title: 'Express' });
-=======
+    if (alreadyExist == null) {    
+    var newUser = new UserModel ({
+      firstName: req.body.name,
+      lastName: req.body.firstname, 
+      email: req.body.email, 
+      password: req.body.password,
+    })
+    var userSaved = await newUser.save();
+    res.redirect('/home')
+  } else {
+    res.redirect('/');
+  }
+});
+
 router.get("/home", (req, res) => {
   res.render("home");
->>>>>>> 499d19bfe92a4ad9247e174a005ae34927bcf0c0
 });
 
 module.exports = router;

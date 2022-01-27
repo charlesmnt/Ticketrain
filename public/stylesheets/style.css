@@ -30,15 +30,15 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin : 5%;
-}
-
-.form-control {
-  margin : 5%;
-  height : 40px;
+  margin : 2%;
+  padding : 2%;
 }
 
 h3 {
   color: white;
+}
+
+.text {
+  margin : 7%;
 }
 
