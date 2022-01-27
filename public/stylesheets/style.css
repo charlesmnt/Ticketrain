@@ -1,13 +1,13 @@
 body {
+  height: 100vh;
   background: linear-gradient(180deg, rgb(194, 216, 245), rgb(40, 119, 223));
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background: linear-gradient(180deg, rgb(194, 216, 245), rgb(40, 119, 223));
 }
 
 
-.globale {
+/* .globale {
   height : 100vh;
-}
+} */
 
 .naviguation {
   height: 10%;
