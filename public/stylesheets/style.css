@@ -2,7 +2,7 @@ body {
   height: 100vh;
   background: linear-gradient(180deg, rgb(194, 216, 245), rgb(40, 119, 223));
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-} */
+} 
 
 #landmark-img {
   width: 200px;
@@ -11,7 +11,9 @@ body {
   color : red;
   font-weight: bolder;
 }
-
+.journey-price {
+  margin: 0;
+}
 .sign {
   height : 100%;
   display: flex;
