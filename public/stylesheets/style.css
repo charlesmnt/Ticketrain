@@ -4,6 +4,9 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 } */
 
+#landmark-img {
+  width: 200px;
+}
 #connection {
   color : red;
   font-weight: bolder;
@@ -30,11 +33,6 @@ body {
   justify-content: center;
   align-items: center;
   margin : 5%;
-}
-
-.form-control {
-  margin : 5%;
-  height : 40px;
 }
 
 h3 {
