@@ -75,9 +75,11 @@ router.get("/MyLastTrips", async function (req, res) {
   if (req.session.userId == null) {
     res.redirect('/');
   } else {
-    var MyLastOrder = await UserModel.findById(req.session.userId).populate({path: 'orders', populate:{path: 'journeys', model: OrderModel }}).exec();
-    console.log(MyLastOrder);
-    res.render("home");
+   
+   var MyLastOrder = await UserModel.findById(req.session.userId).populate({path: 'orders', populate: {path: 'journeys'}}).exec();
+   var MyLastTrips = MyLastOrder.orders; 
+  
+    res.render("mytrips", {MyLastTrips});
   }
 });
 
