@@ -46,3 +46,27 @@ h3 {
   margin : 7%;
 }
 
+.listeTrips {
+  height : 100vh;
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  flex-direction: column;
+  margin : 5%;
+}
+
+.mylistrip {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+.table{
+  margin-top : 2%;
+}
+
+h2 {
+  color:white;
+  font-weight: bolder;
+}

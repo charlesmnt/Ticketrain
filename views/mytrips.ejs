@@ -1,0 +1,32 @@
+<%- include("partials/header") %> 
+
+<div class="row mylistrip">
+    <div class="listeTrips col-8">
+        <h2>My Last Trips</h2>
+        <table class="table bg-white">
+            <thead>
+                <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Journey</th>
+                <th scope="col">Departure time</th>
+                <th scope="col">Price</th>
+                </tr>
+            </thead>
+            <% for(var i=0; i<MyLastTrips.length; i++) {
+                for (var y=0; y<MyLastTrips[i].journeys.length; y++) {
+            %>
+            <tr>
+                <td><%=MyLastTrips[i].journeys[y].date%></td>
+                <td><%=MyLastTrips[i].journeys[y].departure%>/<%=MyLastTrips[i].journeys[y].arrival%></td>
+                <td><%=MyLastTrips[i].journeys[y].departureTime%></td>
+                <td><%=MyLastTrips[i].journeys[y].price%>€</td>
+            </tr>
+            <% }} %>
+        </table>
+    </div>
+</div>
+
+
+
+
+<%- include("partials/footer") %>    
