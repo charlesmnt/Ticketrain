@@ -1,16 +1,29 @@
 <%- include("partials/header") %> 
 
-
-      <div class="row sign">
-        <div>
-          <div>
-          <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Email">
-          <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Password">
-          <button type="button" class="btn btn-danger">Confirm</button>
-          </div>
-
-        </div>
+    <div class="row h-100 d-flex justify-content-center flex-column align-items-center">
+      <div class="col-6">
+        <h2 class="text-white text-start mt-5">One-way-ticket :</h2>
       </div>
+      <div class="col-8 d-flex justify-content-center flex-column align-items-center">
+        <form class="d-flex flex-row my-3" action="/search-journey" method="post">
+            <div class="mx-3">
+              <input name="departure" type="text" class="form-control" placeholder="From: Paris, Marseille..">
+            </div>
+            <div class="mx-3">
+              <input name="arrival" type="text" class="form-control" placeholder="To: Lille, Nantes..">
+            </div>
+            <div class="mx-3">
+              <button type="submit" class="btn btn-danger">Go</button>
+            </div>
+          </form>
+        </div>
+    </div>
+
+    <div class="row d-flex justify-content-center">
+      <div class="col-2 d-flex justify-content-center">
+        <img src="images/landmark.png" class="img-fluid mt-5" id="landmark-img" alt="city">
+      </div>
+    </div>
 
 <%- include("partials/footer") %>       
     

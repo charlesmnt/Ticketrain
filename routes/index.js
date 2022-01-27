@@ -42,4 +42,14 @@ router.get("/home", (req, res) => {
   res.render("home");
 });
 
+router.get("/home", (req, res) => {
+  res.render("home");
+});  
+
+router.post("/search-journey", (req, res) => {
+  console.log(req.body);
+  res.render("journeys"); 
+});
+
+
 module.exports = router;
