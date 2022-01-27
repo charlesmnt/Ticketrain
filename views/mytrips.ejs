@@ -16,7 +16,7 @@
                 for (var y=0; y<MyLastTrips[i].journeys.length; y++) {
             %>
             <tr>
-                <td><%=MyLastTrips[i].journeys[y].date%></td>
+                <td><%=formatDate(MyLastTrips[i].journeys[y].date)%></td>
                 <td><%=MyLastTrips[i].journeys[y].departure%>/<%=MyLastTrips[i].journeys[y].arrival%></td>
                 <td><%=MyLastTrips[i].journeys[y].departureTime%></td>
                 <td><%=MyLastTrips[i].journeys[y].price%>€</td>

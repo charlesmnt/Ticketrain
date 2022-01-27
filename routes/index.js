@@ -3,6 +3,7 @@ const UserModel = require("../models/users");
 const OrderModel = require("../models/orders"); 
 const JourneyModel = require("../models/journeys");
 var router = express.Router();
+const stripe = require('stripe')('sk_test_51KMbZUBK5cElSMIeDDWOkQHxvFzLW4xWtbuR2u08BuJ74xqC8satLEOYn3MydGGIVClw3gU53XUVFVIYYnQiwPrr00UP5mvIOR');
 
 
 /* GET home page. */
@@ -51,9 +52,10 @@ router.get("/home", (req, res) => {
 });
 
 router.post("/search-journey", async (req, res) => {
-
-  if(req.body.date !== "") {
-    let journeys = await JourneyModel.find({ departure: req.body.departure, arrival: req.body.arrival, date: new Date(req.body.date)});
+var departure = req.body.departure.substring(0,1).toUpperCase() + req.body.departure.substring(1).toLowerCase();
+var arrival = req.body.arrival.substring(0,1).toUpperCase() + req.body.arrival.substring(1).toLowerCase(); 
+if(req.body.date !== "") {
+    let journeys = await JourneyModel.find({ departure, arrival, date: new Date(req.body.date)});
 
     if(journeys.length === 0) {
       res.redirect("/notfound"); 
@@ -95,9 +97,32 @@ router.get("/basket", (req, res) => {
   }
 });
 
-router.get("/confirm-basket", (req, res) => {
-  res.redirect("/basket");
-});
+router.post("/create-checkout-session", async (req, res) => {
+var line_items = [];
+
+for (var i=0; i<req.session.basket.length; i++) {
+  line_items.push(
+    {
+      price_data: {
+        currency: 'eur',
+        product_data: {
+          name: req.session.basket[i].departure + "/" + req.session.basket[i].arrival,
+        },
+        unit_amount: req.session.basket[i].price*100,
+      },
+      quantity: req.session.basket.length,
+    })}
+
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    line_items: line_items,
+    mode: 'payment',
+    success_url: 'http://localhost:3000/home',
+    cancel_url: 'http://localhost:3000/error',
+  });
+ 
+  res.redirect(303, session.url);
+ });
 
 router.get("/MyLastTrips", async function (req, res) {
   
@@ -115,5 +140,7 @@ router.get("/MyLastTrips", async function (req, res) {
 router.get("/notfound", (req, res) => {
   res.render("notfound");
 });
+
+
 
 module.exports = router;
