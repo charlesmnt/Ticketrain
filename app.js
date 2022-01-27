@@ -1,3 +1,4 @@
+const mongoose = require("./models/connexion"); 
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -8,8 +9,15 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var models = require('./routes/index')
 
+var session = require("express-session"); 
+
 var app = express();
 
+app.use(session({
+  secret: 'ticketac-project-0001',
+  resave: false,
+  saveUninitialized: false,
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
