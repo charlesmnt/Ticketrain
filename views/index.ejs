@@ -3,9 +3,61 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    <div class="container-fluid globale">
+      <div class="row naviguation">
+      <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">
+            <img src="/images/train.png" alt="" width="30" height="24" class="d-inline-block align-text-top">
+            Ticketac
+          </a>
+          <div>
+            <a class="navbar-brand" href="#">
+              <span id="connection">Connection</span>
+            </a>
+            <a class="navbar-brand" href="#">
+              My last trips
+            </a>
+          </div>
+        </div>
+      </nav>
+      </div>
+
+      <div class="row sign">
+        <div>
+          <div>
+          <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Email">
+          <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Password">
+          <button type="button" class="btn btn-danger">Confirm</button>
+          </div>
+          <div>
+            <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Name">
+            <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Firstname">
+            <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Email">
+            <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Password">
+            <button type="button" class="btn btn-danger">Confirm</button> 
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+      </div>
+
+
+
+
+
+
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
   </body>
 </html>
