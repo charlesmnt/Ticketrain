@@ -63,6 +63,10 @@ router.get("/home", (req, res) => {
 });
 
 router.post("/search-journey", async (req, res) => {
+  let isAuth = false;
+  if(req.session.userId !== undefined) {
+    isAuth = true; 
+  }
 var departure = req.body.departure.substring(0,1).toUpperCase() + req.body.departure.substring(1).toLowerCase();
 var arrival = req.body.arrival.substring(0,1).toUpperCase() + req.body.arrival.substring(1).toLowerCase(); 
 if(req.body.date !== "") {
@@ -77,7 +81,7 @@ if(req.body.date !== "") {
     dateReq.day = date.getDate();
     dateReq.month = date.getMonth() +1
     
-    res.render("journeys", { journeys, dateReq }); 
+    res.render("journeys", { journeys, dateReq, isAuth }); 
   } else {
     res.redirect("/notfound");
   }
