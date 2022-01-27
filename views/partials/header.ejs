@@ -11,17 +11,23 @@
       
       <nav class="navbar navbar-light bg-light">
         <div class="container-fluid">
-          <a class="navbar-brand" href="/">
+          <% if(isAuth) { %>
+          <a class="navbar-brand" href="/home">
+            <% } else { %>
+            <a class="navbar-brand" href="/">
+            <% } %>
             <img src="/images/train.png" alt="" width="30" height="24" class="d-inline-block align-text-top">
             Ticketac
           </a>
           <div>
-            <a class="navbar-brand" href="/">
-              <span id="connection">Connection</span>
-            </a>
-            <a class="navbar-brand" href="/MyLastTrips">
-              My last trips
-            </a>
+            <% if(isAuth) { %>
+              <a class="navbar-brand" href="/logout">
+                <span id="connection">Logout</span>
+              </a>
+              <a class="navbar-brand" href="/MyLastTrips">
+                My last trips
+              </a>
+            <% } %>
           </div>
         </div>
       </nav>

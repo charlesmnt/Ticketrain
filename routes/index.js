@@ -7,7 +7,11 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index');
+  let isAuth = false;
+  if(req.session.userId !== undefined) {
+    isAuth = true; 
+  }
+  res.render('index', { isAuth });
 });
 
 router.post('/sign-in', async function(req, res, next) {
@@ -15,7 +19,7 @@ router.post('/sign-in', async function(req, res, next) {
      if (user != null) {
       req.session.userId = user._id;
       console.log(req.session.userId);
-      res.render('home');
+      res.redirect('/home');
       
     } else {
       res.redirect('/');
@@ -41,12 +45,19 @@ router.post('/sign-in', async function(req, res, next) {
   }
 });
 
+router.get("/logout", (req, res) => {
+  req.session.userId = undefined; 
+  res.redirect("/");
+});
+
 router.get("/home", (req, res) => {
-  
+  let isAuth = false;
+
   if (req.session.userId == null) {
     res.redirect('/');
   } else {
-    res.render("home");
+    isAuth = true; 
+    res.render("home", { isAuth });
   }
 });
 
@@ -84,12 +95,16 @@ router.get("/add-trip/:tripId", async (req, res) => {
 });
 
 router.get("/basket", (req, res) => {
+  let isAuth = false;
+  if(req.session.userId !== undefined) {
+    isAuth = true; 
+  }
   if(req.session.basket !== undefined) {
     let totalPrice = 0; 
     for(let trip of req.session.basket) {
       totalPrice += trip.price
     }
-    res.render("basket", { trips: req.session.basket, totalPrice });
+    res.render("basket", { trips: req.session.basket, totalPrice, isAuth });
   } else {
     res.redirect("/home");
   }
@@ -100,20 +115,24 @@ router.get("/confirm-basket", (req, res) => {
 });
 
 router.get("/MyLastTrips", async function (req, res) {
-  
+  let isAuth = false;
   if (req.session.userId == null) {
     res.redirect('/');
   } else {
-   
+   isAuth = true;
    var MyLastOrder = await UserModel.findById(req.session.userId).populate({path: 'orders', populate: {path: 'journeys'}}).exec();
    var MyLastTrips = MyLastOrder.orders; 
   
-    res.render("mytrips", {MyLastTrips});
+    res.render("mytrips", {MyLastTrips, isAuth });
   }
 });
 
 router.get("/notfound", (req, res) => {
-  res.render("notfound");
+  let isAuth = false;
+  if(req.session.userId !== undefined) {
+    isAuth = true; 
+  }
+  res.render("notfound", { isAuth });
 });
 
 module.exports = router;
