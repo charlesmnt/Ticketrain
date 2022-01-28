@@ -73,8 +73,12 @@ router.get("/home", (req, res) => {
 });
 
 router.get("/redirect", (req, res) => {
+  let isAuth = false;
+  if(req.session.userId !== undefined) {
+    isAuth = true; 
+  }
   if(req.session.userId.search !== undefined) {
-    res.render("journeys", req.session.userId.search); 
+    res.render("journeys", {returnJourneys: req.session.returnJourneys, departureJourneys: req.session.departureJourneys, isAuth, compteurPanier : req.session.compteurPanier, depDate : req.session.depDate , arrDate : req.session.arrDate}); 
     } else
   res.redirect("/home");
 });
@@ -104,7 +108,7 @@ router.post("/search-journey", async (req, res) => {
           req.session.returnJourneys = [];
           req.session.departureJourneys = await JourneyModel.find({ departure, arrival, date: new Date(req.body.departureDate)});
       
-          if(req.session.departureJourney.length === 0) {
+          if(req.session.departureJourneys.length === 0) {
             res.redirect("/notfound"); 
           }
           
