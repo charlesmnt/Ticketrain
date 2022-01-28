@@ -1,9 +1,11 @@
 var express = require('express');
+const dotenv = require("dotenv"); 
 const UserModel = require("../models/users"); 
 const OrderModel = require("../models/orders"); 
 const JourneyModel = require("../models/journeys");
 var router = express.Router();
-const stripe = require('stripe')('sk_test_51KMbZUBK5cElSMIeDDWOkQHxvFzLW4xWtbuR2u08BuJ74xqC8satLEOYn3MydGGIVClw3gU53XUVFVIYYnQiwPrr00UP5mvIOR');
+dotenv.config(); 
+const stripe = require('stripe')(process.env.SECRET_STRIPE);
 
 
 /* GET home page. */
@@ -129,7 +131,7 @@ for (var i=0; i<req.session.basket.length; i++) {
         },
         unit_amount: req.session.basket[i].price*100,
       },
-      quantity: req.session.basket.length,
+      quantity: 1,
     })}
 
   const session = await stripe.checkout.sessions.create({
