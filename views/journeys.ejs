@@ -2,13 +2,13 @@
 
     <div class="row d-flex justify-content-center">
       <div class="col-8">
-        <h2 class="text-white text-start mt-5 mb-3">Tickets availble on <%= dateReq.day %>/<%= dateReq.month %> :</h2>
+        <h5 class="text-white text-start mt-5 mb-3">Departure - Tickets availble on <%= depDate.day %>/<%= depDate.month %> :</h5>
       </div>
     </div>  
     <div class="row d-flex justify-content-center">
       <div class="col-8">
         <ul class="list-group">
-          <% journeys.forEach(journey => { %>
+          <% departureJourneys.forEach(journey => { %>
             <li class="list-group-item p-3 mb-3 list-group-item-action d-flex justify-content-between align-items-center">
               <h5 class="journey-price"><%= journey.departure %>/<%= journey.arrival %></h5>
               <small>train departure at <%= journey.departureTime %></small>
@@ -20,8 +20,33 @@
           <% }); %>
         </ul>
       </div>
-
     </div>
+
+    <% if(arrDate && returnJourneys.length > 0) { %>
+    <div class="row d-flex justify-content-center">
+      <div class="col-8">
+        <h5 class="text-white text-start mt-5 mb-3">Return - Tickets availble on <%= arrDate.day %>/<%= arrDate.month %> :</h5>
+      </div>
+    </div>  
+    <div class="row d-flex justify-content-center">
+      <div class="col-8">
+        <ul class="list-group">
+          <% returnJourneys.forEach(journey => { %>
+            <li class="list-group-item p-3 mb-3 list-group-item-action d-flex justify-content-between align-items-center">
+              <h5 class="journey-price"><%= journey.departure %>/<%= journey.arrival %></h5>
+              <small>train departure at <%= journey.departureTime %></small>
+              <form id="myForm" action="/add" method="post">
+              <span class="d-flex align-items-center">
+                <h5 class="journey-price me-2"><%= journey.price %> €</h5>
+                <a href="/add-trip/<%= journey._id %>" class="btn btn-danger">OK</a>
+              </span>
+              </form>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
+    </div>
+    <% } %>
 
 
 <%- include("partials/footer") %>       
