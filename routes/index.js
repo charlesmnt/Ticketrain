@@ -15,16 +15,18 @@ router.get('/', function(req, res, next) {
   if(req.session.userId !== undefined) {
     isAuth = true; 
   }
-  res.render('index', { isAuth, compteurPanier : req.session.compteurPanier });
+  res.render('index', { isAuth, error: req.session.error, compteurPanier : req.session.compteurPanier });
+  req.session.error = undefined
+
 });
 
 router.post('/sign-in', async function(req, res, next) {
     var user = await UserModel.findOne({email : req.body.email , password : req.body.password})
      if (user != null) {
       req.session.userId = { user : user._id, email : user.email};
-      res.redirect('/home');
-      
+      res.redirect('/home');      
     } else {
+      req.session.error = "email or password is incorrect"
       res.redirect('/');
     }
   });
@@ -44,6 +46,7 @@ router.post('/sign-in', async function(req, res, next) {
     req.session.userId = { user : userSaved._id, email : userSaved.email};
     res.redirect('/home')
   } else {
+    req.session.error = "email already used, please sign in!"
     res.redirect('/');
   }
 });
@@ -69,6 +72,13 @@ router.get("/home", (req, res) => {
   }
 });
 
+router.get("/redirect", (req, res) => {
+  if(req.session.userId.search !== undefined) {
+    res.render("journeys", req.session.userId.search); 
+    } else
+  res.redirect("/home");
+});
+
 router.post("/search-journey", async (req, res) => {
 
   if(req.session.basket == undefined){
@@ -82,28 +92,33 @@ router.post("/search-journey", async (req, res) => {
     isAuth = true; 
   }
 
-var departure = req.body.departure.substring(0,1).toUpperCase() + req.body.departure.substring(1).toLowerCase();
-var arrival = req.body.arrival.substring(0,1).toUpperCase() + req.body.arrival.substring(1).toLowerCase(); 
 
-// One Way
-if(req.body.departureDate !== "" && req.body.returnDate == "") {
-    req.session.returnJourneys = [];
-    req.session.departureJourneys = await JourneyModel.find({ departure, arrival, date: new Date(req.body.departureDate)});
-
-    if(req.session.departureJourneys.length === 0) {
-      res.redirect("/notfound"); 
-    }
-    
-    req.session.depDate = {}
-    req.session.arrDate = {}
-    let date = new Date(req.body.departureDate); 
-    req.session.depDate.day = date.getDate();
-    req.session.depDate.month = date.getMonth() +1
-  
-    res.render("journeys", { departureJourneys : req.session.departureJourneys, returnJourneys: req.session.returnJourneys, depDate : req.session.depDate, arrDate : req.session.arrDate, isAuth, compteurPanier : req.session.compteurPanier }); 
-
-// RETURN 
-  } else if (req.body.departureDate !== "" && req.body.returnDate !== "") {
+  if(req.session.userId.search !== undefined) {
+    res.render("journeys", req.session.userId.search); 
+    } else {
+      var departure = req.body.departure.substring(0,1).toUpperCase() + req.body.departure.substring(1).toLowerCase();
+      var arrival = req.body.arrival.substring(0,1).toUpperCase() + req.body.arrival.substring(1).toLowerCase(); 
+      
+      // One Way
+      if(req.body.departureDate !== "" && req.body.returnDate == "") {
+          req.session.returnJourneys = [];
+          req.session.departureJourneys = await JourneyModel.find({ departure, arrival, date: new Date(req.body.departureDate)});
+      
+          if(req.session.departureJourney.length === 0) {
+            res.redirect("/notfound"); 
+          }
+          
+          req.session.depDate = {}
+          req.session.arrDate = {}
+          let date = new Date(req.body.departureDate); 
+          req.session.depDate.day = date.getDate();
+          req.session.depDate.month = date.getMonth() +1
+          
+          req.session.userId.search = { departureJourneys : req.session.departureJourneys, returnJourneys: req.session.returnJourneys, depDate : req.session.depDate, arrDate : req.session.arrDate, isAuth, compteurPanier : req.session.compteurPanier };
+      
+          res.render("journeys", req.session.userId.search); 
+        }
+  else if (req.body.departureDate !== "" && req.body.returnDate !== "") {
 
     req.session.departureJourneys = await JourneyModel.find({ departure, arrival, date: new Date(req.body.departureDate)});
 
@@ -123,10 +138,13 @@ if(req.body.departureDate !== "" && req.body.returnDate == "") {
     req.session.arrDate.day = date2.getDate();
     req.session.arrDate.month = date2.getMonth() +1
 
-    res.render("journeys", { departureJourneys: req.session.departureJourneys , returnJourneys: req.session.returnJourneys, depDate : req.session.depDate, arrDate : req.session.arrDate, isAuth, compteurPanier : req.session.compteurPanier }); 
+      req.session.userId.search = { departureJourneys: req.session.departureJourneys , returnJourneys: req.session.returnJourneys, depDate : req.session.depDate, arrDate : req.session.arrDate, isAuth, compteurPanier : req.session.compteurPanier };
 
-  } else {
-    res.redirect("/notfound");s
+      res.render("journeys", req.session.userId.search); 
+
+    } else {
+      res.redirect("/notfound");
+    }
   }
 });
 
@@ -151,10 +169,10 @@ router.get("/add-trip/:tripId", async (req, res) => {
   } else {
     req.session.basket.push(trip);
   }
-  req.session.compteurPanier = req.session.basket.length;
 
-    
+  req.session.compteurPanier = req.session.basket.length; 
   res.render("journeys", {returnJourneys: req.session.returnJourneys, departureJourneys: req.session.departureJourneys, isAuth, compteurPanier : req.session.compteurPanier, depDate : req.session.depDate , arrDate : req.session.arrDate}); 
+
 });
 
 router.get("/delete-trip/:index", (req, res) => {
@@ -187,6 +205,8 @@ router.get("/basket", (req, res) => {
 });
 
 router.post("/create-checkout-session", async (req, res) => {
+  req.session.userId.search = undefined;
+
 var line_items = [];
 
 
@@ -228,7 +248,6 @@ for (var i=0; i<req.session.basket.length; i++) {
   })
 
     var ordersSave = await newOrders.save();
-    console.log(ordersSave._id);
     var userOrderId = await UserModel.findById(req.session.userId.user);
     userOrderId.orders.push(ordersSave._id);
     userOrderId.save();
