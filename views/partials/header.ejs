@@ -25,6 +25,15 @@
           </a>
           <div>
             <% if(isAuth) { %>
+              <a class="navbar-brand" href="/basket">
+              <button type="button" class="btn position-relative basket">
+                <i class="fas fa-shopping-basket"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  <%=compteurPanier%>
+                  <span class="visually-hidden">number of tickets</span>
+                </span>
+              </button>
+              </a>            
               <a class="navbar-brand" href="/logout">
                 <span id="connection">Logout</span>
               </a>
