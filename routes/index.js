@@ -15,8 +15,10 @@ router.get('/', function(req, res, next) {
   if(req.session.userId !== undefined) {
     isAuth = true; 
   }
+  console.log(req.session.error);
   res.render('index', { isAuth, error: req.session.error, compteurPanier : req.session.compteurPanier });
   req.session.error = undefined
+  console.log(req.session.error);
 
 });
 
@@ -53,6 +55,7 @@ router.post('/sign-in', async function(req, res, next) {
 
 router.get("/logout", (req, res) => {
   req.session.userId = undefined; 
+  req.session.error = undefined;
   res.redirect("/");
 });
 
