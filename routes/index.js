@@ -20,8 +20,7 @@ router.get('/', function(req, res, next) {
 router.post('/sign-in', async function(req, res, next) {
     var user = await UserModel.findOne({email : req.body.email , password : req.body.password})
      if (user != null) {
-      req.session.userId = user._id;
-      console.log(req.session.userId);
+      req.session.userId = { user : user._id, email : user.email};
       res.redirect('/home');
       
     } else {
@@ -41,7 +40,7 @@ router.post('/sign-in', async function(req, res, next) {
       password: req.body.password,
     })
     var userSaved = await newUser.save();
-    req.session.userId = userSaved._id;
+    req.session.userId = { user : userSaved._id, email : userSaved.email};
     res.redirect('/home')
   } else {
     res.redirect('/');
@@ -103,6 +102,7 @@ router.get("/add-trip/:tripId", async (req, res) => {
 });
 
 router.get("/basket", (req, res) => {
+
   let isAuth = false;
   if(req.session.userId !== undefined) {
     isAuth = true; 
@@ -110,8 +110,9 @@ router.get("/basket", (req, res) => {
   if(req.session.basket !== undefined) {
     let totalPrice = 0; 
     for(let trip of req.session.basket) {
-      totalPrice += trip.price
+      totalPrice += trip.price;
     }
+    
     res.render("basket", { trips: req.session.basket, totalPrice, isAuth });
   } else {
     res.redirect("/home");
@@ -120,6 +121,7 @@ router.get("/basket", (req, res) => {
 
 router.post("/create-checkout-session", async (req, res) => {
 var line_items = [];
+
 
 for (var i=0; i<req.session.basket.length; i++) {
   line_items.push(
@@ -141,7 +143,29 @@ for (var i=0; i<req.session.basket.length; i++) {
     success_url: 'http://localhost:3000/home',
     cancel_url: 'http://localhost:3000/error',
   });
- 
+  
+  var listeTrips = [];
+  for (trips of req.session.basket) {
+  listeTrips.push(trips._id)
+  };
+
+  var totalBasket = req.session.basket.reduce(function(somme, valeur){
+    return somme + valeur.price;
+  }, 0);
+
+  var newOrders = new OrderModel ({
+    date_insert: new Date, 
+    total: totalBasket, 
+    user_email: req.session.userId.email,
+    journeys: listeTrips
+  })
+
+    var ordersSave = await newOrders.save();
+    console.log(ordersSave._id);
+    var userOrderId = await UserModel.findById(req.session.userId.user);
+    userOrderId.orders.push(ordersSave._id);
+    userOrderId.save();
+
   res.redirect(303, session.url);
  });
 
@@ -151,7 +175,7 @@ router.get("/MyLastTrips", async function (req, res) {
     res.redirect('/');
   } else {
    isAuth = true;
-   var MyLastOrder = await UserModel.findById(req.session.userId).populate({path: 'orders', populate: {path: 'journeys'}}).exec();
+   var MyLastOrder = await UserModel.findById(req.session.userId.user).populate({path: 'orders', populate: {path: 'journeys'}}).exec();
    var MyLastTrips = MyLastOrder.orders; 
   
     res.render("mytrips", {MyLastTrips, isAuth });
