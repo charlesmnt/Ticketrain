@@ -11,10 +11,11 @@ const stripe = require('stripe')(process.env.SECRET_STRIPE);
 /* GET home page. */
 router.get('/', function(req, res, next) {
   let isAuth = false;
+  req.session.compteurPanier = 0;
   if(req.session.userId !== undefined) {
     isAuth = true; 
   }
-  res.render('index', { isAuth });
+  res.render('index', { isAuth, compteurPanier : req.session.compteurPanier });
 });
 
 router.post('/sign-in', async function(req, res, next) {
@@ -53,17 +54,29 @@ router.get("/logout", (req, res) => {
 });
 
 router.get("/home", (req, res) => {
+  if(req.session.basket == undefined){
+    req.session.compteurPanier = 0;
+  } else {
+    req.session.compteurPanier = req.session.basket.length
+  }
   let isAuth = false;
 
   if (req.session.userId == null) {
     res.redirect('/');
   } else {
     isAuth = true; 
-    res.render("home", { isAuth });
+    res.render("home", { isAuth, compteurPanier : req.session.compteurPanier });
   }
 });
 
 router.post("/search-journey", async (req, res) => {
+
+  if(req.session.basket == undefined){
+    req.session.compteurPanier = 0;
+  } else {
+    req.session.compteurPanier = req.session.basket.length
+  }
+
   let isAuth = false;
   if(req.session.userId !== undefined) {
     isAuth = true; 
@@ -74,60 +87,74 @@ var arrival = req.body.arrival.substring(0,1).toUpperCase() + req.body.arrival.s
 
 // One Way
 if(req.body.departureDate !== "" && req.body.returnDate == "") {
-    let returnJourneys = [];
-    let departureJourneys = await JourneyModel.find({ departure, arrival, date: new Date(req.body.departureDate)});
+    req.session.returnJourneys = [];
+    req.session.departureJourneys = await JourneyModel.find({ departure, arrival, date: new Date(req.body.departureDate)});
 
-    if(departureJourneys.length === 0) {
+    if(req.session.departureJourneys.length === 0) {
       res.redirect("/notfound"); 
     }
     
-    let depDate = {}
-    let arrDate = {}
+    req.session.depDate = {}
+    req.session.arrDate = {}
     let date = new Date(req.body.departureDate); 
-    depDate.day = date.getDate();
-    depDate.month = date.getMonth() +1
+    req.session.depDate.day = date.getDate();
+    req.session.depDate.month = date.getMonth() +1
   
-    res.render("journeys", { departureJourneys, returnJourneys, depDate, arrDate, isAuth }); 
+    res.render("journeys", { departureJourneys : req.session.departureJourneys, returnJourneys: req.session.returnJourneys, depDate : req.session.depDate, arrDate : req.session.arrDate, isAuth, compteurPanier : req.session.compteurPanier }); 
 
 // RETURN 
   } else if (req.body.departureDate !== "" && req.body.returnDate !== "") {
 
-    let departureJourneys = await JourneyModel.find({ departure, arrival, date: new Date(req.body.departureDate)});
+    req.session.departureJourneys = await JourneyModel.find({ departure, arrival, date: new Date(req.body.departureDate)});
 
-    let returnJourneys = await JourneyModel.find({departure: arrival, arrival: departure, date: new Date(req.body.returnDate)});
+    req.session.returnJourneys = await JourneyModel.find({departure: arrival, arrival: departure, date: new Date(req.body.returnDate)});
 
-    if(departureJourneys.length === 0) {
+    if(req.session.departureJourneys.length === 0) {
       res.redirect("/notfound"); 
     }
 
-    let depDate = {}
+    req.session.depDate = {}
     let date1 = new Date(req.body.departureDate); 
-    depDate.day = date1.getDate();
-    depDate.month = date1.getMonth() +1
+    req.session.depDate.day = date1.getDate();
+    req.session.depDate.month = date1.getMonth() +1
 
-    let arrDate = {}
+    req.session.arrDate = {}
     let date2 = new Date(req.body.returnDate); 
-    arrDate.day = date2.getDate();
-    arrDate.month = date2.getMonth() +1
+    req.session.arrDate.day = date2.getDate();
+    req.session.arrDate.month = date2.getMonth() +1
 
-    res.render("journeys", { departureJourneys, returnJourneys, depDate, arrDate, isAuth }); 
+    res.render("journeys", { departureJourneys: req.session.departureJourneys , returnJourneys: req.session.returnJourneys, depDate : req.session.depDate, arrDate : req.session.arrDate, isAuth, compteurPanier : req.session.compteurPanier }); 
 
   } else {
-    res.redirect("/notfound");
+    res.redirect("/notfound");s
   }
 });
 
 router.get("/add-trip/:tripId", async (req, res) => {
-  let trip = await JourneyModel.findById(req.params.tripId); 
+  
+  let isAuth = false;
+  if(req.session.userId !== undefined) {
+    isAuth = true; 
+  }
 
-  if(req.session.basket == undefined) {
+  if(req.session.basket == undefined){
+    req.session.compteurPanier = 0;
+  } else {
+    req.session.compteurPanier = req.session.basket.length
+  }
+
+  let trip = await JourneyModel.findById(req.params.tripId); 
+    if(req.session.basket == undefined) {
     req.session.basket = [];
     req.session.basket.push(trip);
+    
   } else {
     req.session.basket.push(trip);
   }
-  console.log(req.session.basket);
-  res.redirect("/basket"); 
+  req.session.compteurPanier = req.session.basket.length;
+
+    
+  res.render("journeys", {returnJourneys: req.session.returnJourneys, departureJourneys: req.session.departureJourneys, isAuth, compteurPanier : req.session.compteurPanier, depDate : req.session.depDate , arrDate : req.session.arrDate}); 
 });
 
 router.get("/delete-trip/:index", (req, res) => {
@@ -136,6 +163,12 @@ router.get("/delete-trip/:index", (req, res) => {
 });
 
 router.get("/basket", (req, res) => {
+
+  if(req.session.basket == undefined){
+    req.session.compteurPanier = 0;
+  } else {
+    req.session.compteurPanier = req.session.basket.length
+  }
 
   let isAuth = false;
   if(req.session.userId !== undefined) {
@@ -147,7 +180,7 @@ router.get("/basket", (req, res) => {
       totalPrice += trip.price;
     }
     
-    res.render("basket", { trips: req.session.basket, totalPrice, isAuth });
+    res.render("basket", { trips: req.session.basket, totalPrice, isAuth, compteurPanier : req.session.compteurPanier });
   } else {
     res.redirect("/home");
   }
@@ -212,7 +245,7 @@ router.get("/MyLastTrips", async function (req, res) {
    var MyLastOrder = await UserModel.findById(req.session.userId.user).populate({path: 'orders', populate: {path: 'journeys'}}).exec();
    var MyLastTrips = MyLastOrder.orders; 
   
-    res.render("mytrips", {MyLastTrips, isAuth });
+    res.render("mytrips", {MyLastTrips, isAuth, compteurPanier : req.session.compteurPanier });
   }
 });
 
@@ -221,7 +254,7 @@ router.get("/notfound", (req, res) => {
   if(req.session.userId !== undefined) {
     isAuth = true; 
   }
-  res.render("notfound", { isAuth });
+  res.render("notfound", { isAuth, compteurPanier : req.session.compteurPanier });
 });
 
 
