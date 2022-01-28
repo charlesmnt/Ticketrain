@@ -68,21 +68,50 @@ router.post("/search-journey", async (req, res) => {
   if(req.session.userId !== undefined) {
     isAuth = true; 
   }
+
 var departure = req.body.departure.substring(0,1).toUpperCase() + req.body.departure.substring(1).toLowerCase();
 var arrival = req.body.arrival.substring(0,1).toUpperCase() + req.body.arrival.substring(1).toLowerCase(); 
-if(req.body.date !== "") {
-    let journeys = await JourneyModel.find({ departure, arrival, date: new Date(req.body.date)});
 
-    if(journeys.length === 0) {
+// One Way
+if(req.body.departureDate !== "" && req.body.returnDate == "") {
+    let returnJourneys = [];
+    let departureJourneys = await JourneyModel.find({ departure, arrival, date: new Date(req.body.departureDate)});
+
+    if(departureJourneys.length === 0) {
       res.redirect("/notfound"); 
     }
     
-    let dateReq = {}
-    let date = new Date(req.body.date); 
-    dateReq.day = date.getDate();
-    dateReq.month = date.getMonth() +1
-    
-    res.render("journeys", { journeys, dateReq, isAuth }); 
+    let depDate = {}
+    let arrDate = {}
+    let date = new Date(req.body.departureDate); 
+    depDate.day = date.getDate();
+    depDate.month = date.getMonth() +1
+  
+    res.render("journeys", { departureJourneys, returnJourneys, depDate, arrDate, isAuth }); 
+
+// RETURN 
+  } else if (req.body.departureDate !== "" && req.body.returnDate !== "") {
+
+    let departureJourneys = await JourneyModel.find({ departure, arrival, date: new Date(req.body.departureDate)});
+
+    let returnJourneys = await JourneyModel.find({departure: arrival, arrival: departure, date: new Date(req.body.returnDate)});
+
+    if(departureJourneys.length === 0) {
+      res.redirect("/notfound"); 
+    }
+
+    let depDate = {}
+    let date1 = new Date(req.body.departureDate); 
+    depDate.day = date1.getDate();
+    depDate.month = date1.getMonth() +1
+
+    let arrDate = {}
+    let date2 = new Date(req.body.returnDate); 
+    arrDate.day = date2.getDate();
+    arrDate.month = date2.getMonth() +1
+
+    res.render("journeys", { departureJourneys, returnJourneys, depDate, arrDate, isAuth }); 
+
   } else {
     res.redirect("/notfound");
   }
@@ -99,6 +128,11 @@ router.get("/add-trip/:tripId", async (req, res) => {
   }
   console.log(req.session.basket);
   res.redirect("/basket"); 
+});
+
+router.get("/delete-trip/:index", (req, res) => {
+  let foundTrip = req.session.basket.splice(req.params.index, 1); 
+  res.redirect("/basket");
 });
 
 router.get("/basket", (req, res) => {

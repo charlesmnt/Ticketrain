@@ -26,6 +26,7 @@
                 <td><%= formatDate(trip.date) %></td>
                 <td><%= trip.departureTime %></td>
                 <td><%= trip.price %></td>
+                <td><a href="/delete-trip/<%= index %>"><i class="far fa-trash-alt text-danger"></i></a></td>
               </tr>
             <% }); %>
 
@@ -35,6 +36,7 @@
               <td></td>
               <td></td>
               <th><%= totalPrice %> €</th>
+              <td></td>
             </tr>
           </tbody>
         </table>
@@ -42,12 +44,14 @@
     </div>
 
     <div class="row d-flex justify-content-center">
-      <div class="col-8 text-end">
+      <div class="col-8 d-flex justify-content-between">
+        <button onclick="history.go(-1)" id="back-to-search" class="btn btn-danger">Back</button>
         <form action="/create-checkout-session" method="POST">
-         <button class="btn btn-danger" name="button-checkout" type="submit">CONFIRM</button>
+          <button class="btn btn-danger text-end" name="button-checkout" type="submit">CONFIRM</button>
         </form>
       </div>
     </div>
+
 
 
 <%- include("partials/footer") %>       
